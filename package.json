@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "concurrently --handle-input --names Angular,Backend -c red.bold.bgWhite,green.bold.bgWhite \"ng serve \" \"cd server & npm run dev\"",
+    "start": "concurrently --handle-input --names Angular,Backend -c red.bold.bgBlack,green.bold.bgBlack \"ng serve \" \"cd server & npm run dev\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
