@@ -18,7 +18,7 @@
     >
       <label>
         Username
-        <input type="text" formControlName="username" class="rounded-md"/>
+        <input type="text" name="username" formControlName="username" class="rounded-md"/>
       </label>
       @if(registering){
 
@@ -26,11 +26,10 @@
         Email
         <input type="text" formControlName="email" class="rounded-md"/>
       </label>
-
       }
       <label>
         Password
-        <input type="text" formControlName="password" class="rounded-md"/>
+        <input type="password" name="password" formControlName="password" class="rounded-md"/>
       </label>
       <button
         type="submit"
