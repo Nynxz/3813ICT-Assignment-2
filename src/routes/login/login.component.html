@@ -1,9 +1,18 @@
 <div class="h-full flex flex-grow w-full">
-  <div class="rounded-md mx-auto my-auto border-black w-1/2 text-center">
-    <mat-slide-toggle [(ngModel)]="registering"/>
-    {{registering ? 'Register' : 'Login'}}
+  <div class="rounded-md mx-auto my-auto border-black w-1/2 text-center rounded-md border-black border-2">
+    <div class="flex flex-row">
+
+    <div class="flex flex-row my-2 rounded-md  p-2 justify-between w-1/2 mx-auto border-2 border-black">
+    <mat-slide-toggle [(ngModel)]="registering" class="mx-auto"/>
+      <span class=" mx-auto my-auto pr-2 font-bold">
+        {{registering ? 'Register' : 'Login'}}
+      </span>
+
+    </div>
+
+    </div>
     <form
-      class=" flex flex-col gap-2 my-2 rounded-md border-black border-2 flex-shrink max-w-min mx-auto p-2"
+      class=" flex flex-col gap-2 my-2  flex-shrink max-w-min mx-auto p-2"
       [formGroup]="loginForm"
       (ngSubmit)="handleSubmit()"
     >
@@ -32,6 +41,5 @@
       {{error}}
     </form>
 
-    <button (click)="userService.logout()">Logout!</button>
   </div>
 </div>

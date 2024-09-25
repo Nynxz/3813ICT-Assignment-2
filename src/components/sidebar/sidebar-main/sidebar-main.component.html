@@ -25,7 +25,7 @@
   </mat-card-content>
   <mat-card-footer>
     <div class="flex flex-row h-full flex-grow ml-4 ">
-      <div class="flex flex-grow rounded-md border-2 border-black my-1 cursor-pointer hover:ring-2 hover:ring-blue-200 active:ring-blue-500" [routerLink]="['/login']">
+      <div class="flex flex-grow rounded-md border-2 border-black my-1 cursor-pointer hover:ring-2 hover:ring-blue-200 active:ring-blue-500" [routerLink]=" userService.user() ? '/profile' : '/login'">
         <img src="ui/account_circle_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg" alt="Close Panel" [class]=" 'h-10 w-10 my-auto ' + preferencesService.sidebar_folded() ? '' : 'mx-auto'  "/>
         @if(preferencesService.sidebar_folded()){
           <span class="my-auto font-bold flex flex-row" >

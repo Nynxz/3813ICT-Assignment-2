@@ -4,6 +4,7 @@ import {UserService} from "@services/user/user.service";
 import {Validators} from '@angular/forms';
 import {catchError} from "rxjs";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -25,14 +26,16 @@ export class LoginRoute {
 
   loginForm = new FormGroup({
     username: new FormControl('', Validators.required),
-    email: new FormControl('', this.registering ? Validators.required : undefined),
+    email: new FormControl('', this.registering ? [Validators.required, Validators.email] : undefined),
     password: new FormControl('', Validators.required),
   });
 
   error = "";
 
 
-  constructor(protected userService: UserService) {
+  constructor(
+    protected userService: UserService,
+    private router: Router) {
   }
 
   handleSubmit() {
@@ -42,10 +45,7 @@ export class LoginRoute {
       if(!this.registering){
         this.userService.login(this.loginForm.value.username || '', this.loginForm.value.password || '')
       } else {
-        this.userService.register(this.loginForm.value.username || '', this.loginForm.value.email || '',this.loginForm.value.password || '').pipe(catchError(err => this.error = err.error)).subscribe((e: any) => {
-          console.log("RES")
-          console.log(e);
-        })
+        this.userService.register(this.loginForm.value.username || '', this.loginForm.value.email || '',this.loginForm.value.password || '')
       }
     }
   }

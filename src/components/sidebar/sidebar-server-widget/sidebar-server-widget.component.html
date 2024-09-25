@@ -1,4 +1,7 @@
-<div [class]="(selected ?  'ring-2 ring-blue-500' : 'hover:ring-blue-200') + ' rounded-md border-black border-2 my-1 hover:ring-2  active:ring-blue-500 cursor-pointer select-none'" (click)="doClicked()">
+<div
+  [class]="(selected ?  'ring-2 ring-blue-500' : 'hover:ring-blue-200')
+    + ' rounded-md border-black border-2 my-1 hover:ring-2  active:ring-blue-500 cursor-pointer select-none'"
+  (click)="doClicked()">
   @if (!folded){
     <img src="psyense.png" class="rounded-l-md w-8 h-8" draggable="false"/>
   } @else {
