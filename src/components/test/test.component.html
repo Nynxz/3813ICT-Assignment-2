@@ -1,4 +1,7 @@
-<mat-slide-toggle
-  [(ngModel)]="isChecked"
-  (change)="onChange()"
-></mat-slide-toggle>
+  <h1 class="text-3xl font-bold underline">
+    {{isChecked ? "Hello World!" : "Hello Universe!"}}
+  </h1>
+  <mat-slide-toggle
+    [(ngModel)]="isChecked"
+    (change)="onChange()"
+  ></mat-slide-toggle>

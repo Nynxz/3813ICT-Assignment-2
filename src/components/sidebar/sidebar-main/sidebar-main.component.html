@@ -1,0 +1,33 @@
+<mat-card appearance="outlined" class="h-full max-h-full">
+  <mat-card-header>Header {{this.userService.server()}}</mat-card-header>
+  <mat-card-content class="overflow-y-scroll">
+    <ul>
+    @for(server of servers; track server){
+      <li>
+        <app-sidebar-server-widget
+          [server]="server"
+          [selected]="this.userService.server() == server"
+          (clicked)="this.userService.selectServer($event)"
+        />
+      </li>
+    }
+    </ul>
+  </mat-card-content>
+  <mat-card-footer>
+    <div class="flex flex-row h-full flex-grow ">
+      <div class="flex flex-grow rounded-md border-2 border-black pl-2 my-1 mr-2">
+        <span class="my-auto font-bold">
+          Login {{preferencesService.sidebar_folded()}}
+        </span>
+      </div>
+      <div class="flex my-1 rounded-md mr-1">
+        <span class="material-symbols-outlined text-4xl">
+          <button (click)="preferencesService.sidebar_folded.set(!preferencesService.sidebar_folded())" class="">
+            {{!preferencesService.sidebar_folded() ? 'left_panel_open' : 'left_panel_close'}}
+          </button>
+        </span>
+    </div>
+    </div>
+  </mat-card-footer>
+</mat-card>
+
