@@ -1,0 +1,45 @@
+<mat-card class="w-full h-full">
+  <div class="flex flex-row h-full ">
+    @if(requestableGroups().length != 0){
+    <div class="h-full min-w-fit overflow-y-auto border-r-[1px] border-black overflow-x-hidden">
+      <ul class="py-2 min-w-4">
+        @for (i of requestableGroups(); track i._id) {
+          <li
+            [class]="'select-none cursor-pointer px-2 flex flex-row justify-between ' + (selectedGroup() === i ? ' underline' : '')"
+            (click)="selectServer(i)"
+          >
+            <span class=" mr-1">
+              {{ i.name }}
+            </span>
+            <div [class]="'w-4 h-4  my-auto rounded-sm ' + (!userHasRequested(i) ? ' bg-red-500' : ' bg-green-500')"></div>
+          </li>
+        }
+      </ul>
+    </div>
+    }
+
+    <div class="flex flex-grow flex-col">
+      <div class="border-b-[1px] border-black p-2">
+        <span class="font-bold text-2xl">Request to Join</span>
+      </div>
+      <div class="flex flex-col h-full w-full">
+        @if(!jj()){
+          <button (click)="userService.requestToJoinGroup(selectedServer()); updateSelectedServer()" [hidden]="!selectedServer()">Request to Join</button>
+        } @else {
+          <button>
+            Already Requested
+          </button>
+
+          <button (click)="userService.cancelRequestToJoinGroup(selectedServer()); updateSelectedServer()">
+            Cancel Request
+          </button>
+        }
+        @if(requestableGroups().length == 0){
+          <span class="text-2xl justify-center align-middle text-center my-auto">
+            No Groups!
+          </span>
+        }
+      </div>
+    </div>
+  </div>
+</mat-card>

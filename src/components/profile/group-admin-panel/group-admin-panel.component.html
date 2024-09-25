@@ -1,0 +1,61 @@
+<mat-card class="w-full h-full">
+  <div class="flex flex-row h-full">
+    <div
+      class="h-full min-w-fit overflow-y-auto border-r-[1px] border-black overflow-x-hidden"
+    >
+      <ul class="py-2">
+        @for (i of this.userService.groups(); track i._id) {
+          <li
+            [class]="
+              'select-none cursor-pointer px-2 text-center ' +
+              (selectedServer() === i ? ' underline' : '')
+            "
+            (click)="
+              selectedServer() == i
+                ? (selectedServer.set(undefined))
+                : (selectedServer.set(i))
+            "
+          >
+            {{ i.name }}
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="flex flex-grow flex-col">
+      <div class="border-b-[1px] border-black p-1">
+        <span class="font-bold text-2xl">Group Admin</span>
+        <button (click)="userService.createGroup()">Create</button>
+      </div>
+
+      <div class="flex flex-col h-full w-full">
+        <div class="flex flex-row">
+          <div class="flex flex-col flex-grow ">
+            <span>ID: {{ selectedServer()?._id }}</span>
+            <span>Name: {{ selectedServer()?.name || "" }}</span>
+            <span>Users: {{ selectedServer()?.users.length || 0 }}</span>
+          </div>
+          <div class="overflow-y-scroll border-l-[1px] border-black">
+            <ul class="h-0 ">
+            @for(i of selectedServer()?.requestedUsers; track i){
+              <li class="flex flex-row px-1 justify-between">
+                {{i.username}}
+                <div class="flex flex-row pl-1 gap-[1px]">
+                <img (click)="userService.respondToRequestToJoinGroup(selectedServer(), i, true)" src="ui/check_circle_24dp_000000_FILL0_wght0_GRAD0_opsz24.svg" alt="Open Panel" class="hover:ring-2 hover:ring-blue-500 rounded-full cursor-pointer w-6 h-6 my-auto"/>
+                <img (click)="userService.respondToRequestToJoinGroup(selectedServer(), i, false)" src="ui/cancel_24dp_000000_FILL0_wght0_GRAD0_opsz24.svg" alt="Open Panel" class="hover:ring-2 hover:ring-blue-500 rounded-full cursor-pointer w-6 h-6 my-auto"/>
+                </div>
+              </li>
+            }
+            </ul>
+          </div>
+        </div>
+          <textarea
+            class="flex flex-grow border-t-[1px] rounded-t-none border-black break-words whitespace-pre-wrap flex-wrap h-full resize-none rounded-md"
+            disabled
+          >
+          {{ selectedServer() | json }}
+          </textarea>
+      </div>
+    </div>
+  </div>
+</mat-card>
