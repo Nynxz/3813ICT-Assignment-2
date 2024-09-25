@@ -1,17 +1,17 @@
-<mat-card appearance="outlined" class="h-full max-w-fit max-h-full">
+<mat-card appearance="outlined" [class]="'h-full flex flex-grow max-h-full'">
   <mat-card-header>
     <a [routerLink]="['/']">
     Home
     </a>
     @if(preferencesService.sidebar_folded()){
       <span class="pl-2">
-        {{userService.server()}}
+        {{userService.server()?.name}}
       </span>
     }
   </mat-card-header>
-  <mat-card-content class="overflow-y-scroll w-full ">
+  <mat-card-content class="overflow-y-scroll w-full h-full">
     <ul class="  w-max flex flex-col flex-grow">
-    @for(server of servers; track server){
+    @for(server of userService.groups(); track server._id){
       <li class="">
         <app-sidebar-server-widget
           [server]="server"
@@ -23,27 +23,29 @@
     }
     </ul>
   </mat-card-content>
-  <mat-card-footer>
-    <div class="flex flex-row h-full flex-grow ml-4 ">
-      <div class="flex flex-grow rounded-md border-2 border-black my-1 cursor-pointer hover:ring-2 hover:ring-blue-200 active:ring-blue-500" [routerLink]=" userService.user() ? '/profile' : '/login'">
-        <img src="ui/account_circle_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg" alt="Close Panel" [class]=" 'h-10 w-10 my-auto ' + preferencesService.sidebar_folded() ? '' : 'mx-auto'  "/>
+  <mat-card-footer class="w-full">
+    <div class="flex flex-row h-full flex-grow">
+      <div class="mx-auto flex  flex-grow rounded-md border-2 border-black my-1 cursor-pointer hover:ring-2 hover:ring-blue-200 active:ring-blue-500" [routerLink]=" userService.user() ? '/profile' : '/login'">
+        <div class="flex flex-grow w-8 h-8 my-auto">
+          <img src="ui/account_circle_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg" alt="Close Panel" [class]=" 'h-10 w-10 my-auto ' + preferencesService.sidebar_folded() ? '' : 'mx-auto'  "/>
+        </div>
         @if(preferencesService.sidebar_folded()){
-          <span class="my-auto font-bold flex flex-row" >
+          <div class="w-full my-auto font-bold flex flex-grow" >
             @if(userService.user() !== undefined){
               {{userService.user().username}}
             } @else {
               Login
             }
-        </span>
+        </div>
         }
       </div>
-      <div class="flex my-1 rounded-md mr-1">
+      <div class="flex pl-4 my-1 rounded-md mr-1">
         <span class="text-4xl">
           <button (click)="preferencesService.sidebar_folded.set(!preferencesService.sidebar_folded())" class="h-full">
             @if(preferencesService.sidebar_folded()){
               <img src="ui/left_panel_close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg" alt="Close Panel" class="w-8 h-8 my-auto"/>
             } @else {
-              <img src="ui/left_panel_open_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg" alt="Open Panel" class="w-8 h-8"/>
+              <img src="ui/left_panel_open_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg" alt="Open Panel" class="w-8 h-8 my-auto"/>
             }
           </button>
         </span>

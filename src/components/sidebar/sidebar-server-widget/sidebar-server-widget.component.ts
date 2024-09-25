@@ -8,7 +8,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
   styleUrl: './sidebar-server-widget.component.css'
 })
 export class SidebarServerWidgetComponent {
-  @Input() server: string = '';
+  @Input() server: { name?: string } = {};
   @Input() selected: boolean = false;
   @Input() folded: boolean | null = false;
 

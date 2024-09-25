@@ -3,13 +3,13 @@
     + ' rounded-md border-black border-2 my-1 hover:ring-2  active:ring-blue-500 cursor-pointer select-none'"
   (click)="doClicked()">
   @if (!folded){
-    <img src="psyense.png" class="rounded-l-md w-8 h-8" draggable="false"/>
+    <img src="psyense.png" class="rounded-sm w-8 h-8" draggable="false"/>
   } @else {
     <div class="flex flex-row">
 
     <img src="psyense.png" class="rounded-l-md w-8 h-8" draggable="false"/>
       <span class="my-auto px-2 overflow-hidden line-clamp-1">
-    {{server}}
+    {{server.name}}
       </span>
     </div>
   }

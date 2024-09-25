@@ -67,7 +67,7 @@ export class SidebarMainComponent {
     "Quantum Lounge",
   ]
 
-  selected = ''
+  selected : undefined | {name?:string}
   constructor(
     protected userService: UserService,
     protected preferencesService: PreferencesService
