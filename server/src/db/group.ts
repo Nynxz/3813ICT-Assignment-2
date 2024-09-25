@@ -1,8 +1,8 @@
-import { check_userIsAdminOfGroup } from "./channel";
-import { ChannelModel } from "./types/channel";
-import { Group, GroupModel } from "./types/group";
-import { Roles, UserModel } from "./types/user";
-import { ObjectId } from "mongodb";
+import { check_userIsAdminOfGroup } from './channel';
+import { ChannelModel } from './types/channel';
+import { Group, GroupModel } from './types/group';
+import { Roles, UserModel } from './types/user';
+import { ObjectId } from 'mongodb';
 
 // POST /groups/update
 export async function db_group_update(newServerDetails: Group) {
@@ -17,41 +17,54 @@ export async function db_group_update(newServerDetails: Group) {
 export async function db_group_create(user: any, group: Group) {
   let newGroup = await new GroupModel(group).save();
   newGroup.admins.push(new ObjectId(user as string));
+  newGroup.users.push(new ObjectId(user as string));
   await newGroup.save();
+  await UserModel.findOneAndUpdate(
+    { _id: user },
+    { $addToSet: { groups: newGroup._id } },
+  );
   return newGroup;
 }
 
 // POST /groups/delete
 export async function db_group_delete(group: Group) {
-  return await GroupModel.deleteOne({ _id: group._id });
+  return GroupModel.deleteOne({ _id: group._id });
 }
 
 export async function db_all_groups() {
-  return await GroupModel.find(); // If super get all groups
+  return GroupModel.find().populate('requestedUsers'); // If super get all groups
 }
 
 //TODO: Move to user?
 // GET /groups
 export async function db_user_groups(_user: any) {
   if (_user.roles.includes(2)) {
-    return await GroupModel.find(); // If super get all groups
+    return GroupModel.find().populate({
+      path: 'requestedUsers',
+      select: 'username',
+    }); // If super get all groups
   } else {
+    let user = await UserModel.findById(_user._id).populate('groups');
+    if (user !== null) {
+      return user.groups;
+    }
+    return [];
     // Else gets groups user is admin and user of, removing duplicates
-    let user = await UserModel.findById(_user._id).populate("groups");
-    let groups = await GroupModel.find({
-      admins: [new ObjectId(_user._id as string)],
-    });
-    let a = user?.groups.filter((e) => {
-      let clean = true;
-      groups.forEach((x) => {
-        if (x._id.toString() == e._id.toString()) {
-          clean = false;
-        }
-      });
-      return clean;
-    });
-
-    return [...(a as any), ...groups];
+    // let user = await UserModel.findById(_user._id).populate("groups");
+    // let groups = await GroupModel.find({
+    //   admins: [new ObjectId(_user._id as string)],
+    // });
+    // let a = user?.groups.filter((e) => {
+    //   let clean = true;
+    //   groups.forEach((x) => {
+    //     if (x._id.toString() == e._id.toString()) {
+    //       clean = false;
+    //     }
+    //   });
+    //   return clean;
+    // });
+    //
+    // return [...(a as any), ...groups];
   }
 }
 
@@ -77,11 +90,70 @@ export async function db_group_add_user(username: string, groupID: string) {
 }
 
 export async function db_group_request_to_join(id: string, groupID: string) {
-  console.log("Requesting");
+  console.log('Requesting');
   try {
     let a = await GroupModel.findOneAndUpdate(
       { _id: groupID },
-      { $addToSet: { requestedUsers: new ObjectId(id) } }
+      { $addToSet: { requestedUsers: new ObjectId(id) } },
+      { returnDocument: 'after' },
+    );
+    console.log(a?.requestedUsers);
+    return a;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function db_respond_group_request_to_join(
+  id: string,
+  groupID: string,
+  allow: boolean,
+) {
+  console.log('Requesting');
+  try {
+    console.log(allow);
+    if (allow) {
+      let a = await GroupModel.findOneAndUpdate(
+        { _id: groupID },
+        {
+          $addToSet: { users: new ObjectId(id) },
+          $pull: { requestedUsers: new ObjectId(id) },
+        },
+        { returnDocument: 'after' },
+      );
+      await UserModel.findOneAndUpdate(
+        { _id: id },
+        {
+          $addToSet: { groups: new ObjectId(groupID) },
+        },
+        { returnDocument: 'after' },
+      );
+      return a;
+    } else {
+      let a = await GroupModel.findOneAndUpdate(
+        { _id: groupID },
+        {
+          $pull: { requestedUsers: new ObjectId(id) },
+        },
+        { returnDocument: 'after' },
+      );
+      return a;
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function db_group_cancel_request_to_join(
+  id: string,
+  groupID: string,
+) {
+  console.log('Requesting');
+  try {
+    let a = await GroupModel.findOneAndUpdate(
+      { _id: groupID },
+      { $pull: { requestedUsers: new ObjectId(id) } },
+      { returnDocument: 'after' },
     );
     console.log(a?.requestedUsers);
     return a;
@@ -107,7 +179,7 @@ export async function db_group_remove_user(username: string, groupID: string) {
 // GET /groups/channels
 export async function db_group_channels(
   user: { _id: string; roles: Roles[] },
-  group: string
+  group: string,
 ) {
   if (
     (await check_userIsAdminOfGroup(user._id, group)) ||
@@ -123,12 +195,12 @@ export async function db_group_channels(
 export async function db_group_promote_user_to_group_admin(
   username: string,
   groupID: string,
-  requesterID: string
+  requesterID: string,
 ) {
   let user = await UserModel.findOne({ username });
   if (await check_userIsAdminOfGroup(requesterID, groupID)) {
     if (requesterID == user?.id) {
-      return { error: "cannot remove self as admin" };
+      return { error: 'cannot remove self as admin' };
     }
     let channel = await GroupModel.findOne({ _id: groupID });
     if (!channel?.admins.includes(user!._id)) {
@@ -139,6 +211,6 @@ export async function db_group_promote_user_to_group_admin(
     }
     return await channel?.save();
   } else {
-    return { error: "insufficent permissions" };
+    return { error: 'insufficent permissions' };
   }
 }

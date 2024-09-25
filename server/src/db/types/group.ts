@@ -15,6 +15,12 @@ let GroupSchema = new Schema({
       ref: "User",
     },
   ],
+  users: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   requestedUsers: [
     {
       type: Schema.Types.ObjectId,

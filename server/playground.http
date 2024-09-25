@@ -1,0 +1,22 @@
+### GET HELLO TEST
+GET {{host}}/hello
+
+### GET HELLO TEST
+GET {{host}}/groups/all
+
+### GET USER GROUPS
+GET {{host}}/groups
+Authorization: Bearer {{jwt}}
+
+### POST NEW GROUP
+POST {{host}}/groups/create
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "group": {
+    "name": "Group 1"
+  }
+}
+
+###
