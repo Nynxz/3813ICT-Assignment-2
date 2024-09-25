@@ -10,6 +10,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 export class SidebarServerWidgetComponent {
   @Input() server: string = '';
   @Input() selected: boolean = false;
+  @Input() folded: boolean | null = false;
 
   @Output() clicked = new EventEmitter();
 

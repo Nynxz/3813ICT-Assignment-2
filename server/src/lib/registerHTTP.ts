@@ -36,7 +36,7 @@ export function registerHTTP(
   middlewares?: Middleware[]
 ) {
   /*Below runs when Route is Registered by Gateway on Server Start */
-  Logger.logGreen(`++ (${method.toUpperCase()}) ${endpoint}`);
+  Logger.logGreen(`++ (${method.toUpperCase()}) ${process.env['API_V1_PREFIX']}${endpoint}`);
 
   // same as router.get(), etc, just called dynamically and saves using switch/if else
   (router as any)[method](endpoint, (req: Request, res: Response) => {

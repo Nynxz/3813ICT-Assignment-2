@@ -1,9 +1,9 @@
 <!--ROOT TEMPLATE -->
-<main [class]="'w-full max-h-full grid grid-rows-1 bg-amber-200 h-full ' + (preferencesService.sidebar_folded() ? 'grid-cols-4' : 'grid-cols-8') ">
-  <div class="col-span-1 max-h-full row-span-1 overflow-hidden bg-red-500">
+<main [class]="'flex flex-row w-full max-h-screen overflow-hidden h-full'">
+  <div class="">
     <app-sidebar-main class=""/>
   </div>
-  <div class="col-span-3">
+  <div [class]="'flex flex-grow w-full'">
     <router-outlet></router-outlet>
   </div>
 </main>

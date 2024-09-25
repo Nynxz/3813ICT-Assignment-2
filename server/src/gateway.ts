@@ -41,7 +41,7 @@ export class Gateway {
   async loadRoutes() {
     Logger.logOrange("Loading Routes:");
     await this._loadRoutesFolder();
-    this.app.use(this.router);
+    this.app.use('/api/v1', this.router);
   }
 
   async start() {

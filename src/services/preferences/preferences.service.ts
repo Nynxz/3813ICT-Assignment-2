@@ -2,6 +2,7 @@ import {Injectable, signal, effect} from '@angular/core';
 
 type Preferences = {
   sidebar_folded: boolean;
+  jwt: string;
 }
 
 @Injectable({
@@ -10,16 +11,19 @@ type Preferences = {
 export class PreferencesService {
 
   sidebar_folded = signal(this.getKey('sidebar_folded'));
+  jwt = signal(this.getKey('jwt'));
 
 
 
   constructor() {
     effect(() => {
+      console.log(this.sidebar_folded())
       this.setKey('sidebar_folded', this.sidebar_folded()!);
-      console.log("NEW KEY: ")
-      console.log(
-        this.getKey('sidebar_folded')
-      )
+    })
+
+    effect(() => {
+      console.log(this.jwt())
+      this.setKey('jwt', this.jwt()!);
     })
   }
 
@@ -42,7 +46,7 @@ export class PreferencesService {
     for (const key of keys){
       const value = localStorage.getItem(key);
       if (value !== null){
-        result[key] = this.parseValue(value) as Preferences[keyof Preferences];
+        result[key] = this.parseValue(value);
       }
     }
     return result;

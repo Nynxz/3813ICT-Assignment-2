@@ -4,6 +4,7 @@ import {UserService} from "@services/user/user.service";
 import {MatIconModule} from "@angular/material/icon";
 import {PreferencesService} from "@services/preferences/preferences.service";
 import {SidebarServerWidgetComponent} from "@components/sidebar/sidebar-server-widget/sidebar-server-widget.component";
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-sidebar-main',
@@ -11,7 +12,8 @@ import {SidebarServerWidgetComponent} from "@components/sidebar/sidebar-server-w
   imports: [
     MatCardModule,
     MatIconModule,
-    SidebarServerWidgetComponent
+    SidebarServerWidgetComponent,
+    RouterLink
   ],
   templateUrl: './sidebar-main.component.html',
   styleUrl: './sidebar-main.component.css'

@@ -21,7 +21,7 @@ export default (router: Router, gateway: Gateway) => {
 
   registerHTTP(
     "post",
-    "/user/create",
+    "/user/register",
     router,
     async (req, res) => {
       const user = await db_user_create(req.body.user);
@@ -47,7 +47,7 @@ export default (router: Router, gateway: Gateway) => {
           jwt: generateUserJWT(user as Partial<User>),
         });
       } else {
-        res.status(401).send({ error: "Invalid Login" });
+        res.status(401).send("Invalid Login");
       }
     },
     [requireObjectHasKeys("user", ["username", "password"])]
