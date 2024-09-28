@@ -10,7 +10,7 @@ import { Group } from '../../../server/src/db/types/group';
   providedIn: 'root',
 })
 export class UserService {
-  server = signal<{ name?: string } | undefined>({});
+  server = signal<{ name?: string; _id?: string } | undefined>({});
 
   user = computed<any>(() => {
     const jwt = this.preferencesService.jwt();
@@ -22,6 +22,8 @@ export class UserService {
 
   groups = signal<any[]>([]);
   groupsAll = signal<any[]>([]);
+
+  selectedGroup = signal({} as { channels?: any[] });
 
   constructor(
     private preferencesService: PreferencesService,
@@ -42,6 +44,30 @@ export class UserService {
       if (user) return this.getGroups();
       return [];
     });
+    //
+    effect(
+      () => {
+        const server = this.server();
+        if (server != undefined) {
+          this.http
+            .get('http://localhost:3200/api/v1/groups/info', {
+              headers: {
+                group: server._id!,
+                Authorization: `Bearer ${this.preferencesService.jwt()}`,
+              },
+            })
+            .pipe(catchError((e) => [e] as any[]))
+            .subscribe((a) => {
+              if (a) {
+                this.selectedGroup.set(a);
+              }
+            });
+        } else {
+          this.selectedGroup.set({});
+        }
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   getGroups() {

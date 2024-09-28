@@ -1,1 +1,9 @@
-<p>group works!</p>
+<!--<p>group works!</p>-->
+<ul>
+
+@for(channel of userService.selectedGroup().channels ?? [{}]; track channel){
+  <li>
+  {{channel.name}}
+  </li>
+}
+</ul>
