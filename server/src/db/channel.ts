@@ -1,13 +1,13 @@
-import user from "../routes/user";
-import { ChannelModel } from "./types/channel";
-import { GroupModel } from "./types/group";
-import { MessageModel } from "./types/message";
-import { UserModel } from "./types/user";
-import { ObjectId } from "mongodb";
+import user from '../routes/user';
+import { ChannelModel } from './types/channel';
+import { GroupModel } from './types/group';
+import { MessageModel } from './types/message';
+import { UserModel } from './types/user';
+import { ObjectId } from 'mongodb';
 
 export async function check_userIsAdminOfChannel(
   user: string,
-  channelID: string
+  channelID: string,
 ) {
   let channel = await ChannelModel.findById(channelID);
   let group = await GroupModel.findById(channel?.group);
@@ -19,7 +19,7 @@ export async function check_userIsAdminOfChannel(
 
 export async function check_userIsAdminOfGroup(
   userID: string,
-  groupID: string
+  groupID: string,
 ) {
   let group = await GroupModel.findById(groupID);
   if (group && group.admins.includes(new ObjectId(userID))) {
@@ -31,13 +31,25 @@ export async function check_userIsAdminOfGroup(
 // GET /channel/messages
 export async function db_channel_getMessages(channel: string) {
   return await MessageModel.find({ channel: channel })
-    .populate("sender", "username")
+    .populate('sender', 'username')
     .exec();
 }
 
 // POST /channel/create
-export async function db_channel_create(channel: object) {
-  return await new ChannelModel(channel).save();
+export async function db_channel_create(channel: {
+  group: ObjectId;
+  name: string;
+  users: string[];
+}) {
+  console.log(channel.group);
+  const newChannel = await new ChannelModel(channel).save();
+  await GroupModel.findOneAndUpdate(
+    { _id: newChannel.group },
+    {
+      $addToSet: { channels: newChannel._id },
+    },
+  );
+  return newChannel;
   // return await MongoClient.db("3813ICT")
   //   .collection("channels")
   //   .insertOne(channel);
@@ -56,8 +68,8 @@ export async function db_channel_delete(channel: { _id: string }) {
 // GET /channel/users
 export async function db_channel_users(channel: string) {
   return await ChannelModel.findOne({ _id: channel })
-    .select("users")
-    .populate("users", "username");
+    .select('users')
+    .populate('users', 'username');
 }
 
 // POST /channel/adduser
@@ -67,7 +79,7 @@ export async function db_channel_add_user(channelID: string, username: string) {
   if (channel && user) {
     channel.users.push(user._id);
     if (!user.groups.includes(channel.group!._id)) {
-      console.log("Adding user to parent group");
+      console.log('Adding user to parent group');
       user.groups.push(channel.group!._id);
       await user.save();
     }
@@ -78,7 +90,7 @@ export async function db_channel_add_user(channelID: string, username: string) {
 // POST /channel/remove
 export async function db_channel_remove_user(
   channelID: string,
-  username: string
+  username: string,
 ) {
   let channel = await ChannelModel.findById(channelID);
   let user = await UserModel.findOne({ username });

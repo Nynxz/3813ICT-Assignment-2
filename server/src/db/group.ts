@@ -191,6 +191,15 @@ export async function db_group_channels(
   }
 }
 
+export async function db_group_populate(group: string) {
+  return GroupModel.findById(group).populate([
+    { path: 'users', select: 'username' },
+    'channels',
+    { path: 'requestedUsers', select: ['username', '_id'] },
+    { path: 'admins', select: ['username', '_id'] },
+  ]);
+}
+
 // POST /groups/promoteuser
 export async function db_group_promote_user_to_group_admin(
   username: string,

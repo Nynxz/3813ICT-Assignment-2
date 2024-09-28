@@ -8,6 +8,7 @@ import {
   db_group_channels,
   db_group_create,
   db_group_delete,
+  db_group_populate,
   db_group_promote_user_to_group_admin,
   db_group_remove_user,
   db_group_request_to_join,
@@ -56,6 +57,17 @@ export default (router: Router, gateway: Gateway) => {
     async (req, res) => {
       //get the groups of the user who requested
       res.send(await db_group_channels(res.locals.user, res.locals.group));
+    },
+    [requireHeader('group'), requireAuthHeader()],
+  );
+
+  registerHTTP(
+    'get',
+    '/groups/info',
+    router,
+    async (req, res) => {
+      //get the groups of the user who requested
+      res.send(await db_group_populate(res.locals.group));
     },
     [requireHeader('group'), requireAuthHeader()],
   );
