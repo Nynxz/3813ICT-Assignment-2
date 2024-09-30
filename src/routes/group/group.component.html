@@ -1,9 +1,58 @@
-<!--<p>group works!</p>-->
-<ul>
+@if(userService.selectedGroup().channels){
 
-@for(channel of userService.selectedGroup().channels ?? [{}]; track channel){
-  <li>
-  {{channel.name}}
-  </li>
+  <ul class="max-w-32 min-w-32 w-24 border-black border-2 rounded-md m-1">
+    {{selectedChannel && 'selected:'+selectedChannel.name}}
+    @for(channel of userService.selectedGroup().channels ?? [{}]; track channel){
+      <li
+        class="rounded-md m-1 p-1 border-black border-2 text-sm hover:ring-2 hover:ring-blue-500"
+        (click)="selectChannel(channel)">
+        {{channel.name}}
+      </li>
+    }
+  </ul>
+  <div
+    class="flex flex-grow flex-col bg-primary_100 border-black border-1px rounded-mds "
+  >
+    <div class="flex flex-grow mb-1 py-2 overflow-auto flex-col-reverse border-black border-2 rounded-md m-1">
+      <ul class="flex flex-grow flex-col m-2 ml-0">
+        @for (chat of chats(); track $index) {
+          <li class="flex justify-center w-full">
+            {{chat.content}}
+  <!--          <group-chat-message [message]="item" [fromUser]="true" />-->
+          </li>
+        }
+      </ul>
+    </div>
+    @if(userService.selectedChannel()){
+          <chat-message-sender />
+    }
+  </div>
 }
-</ul>
+
+<!--&lt;!&ndash;<p>group works!</p>&ndash;&gt;-->
+<!--<div class="grid grid-cols-8 bg-blue-200 flex-grow">-->
+<!--  <div class="w-full col-span-1 bg-blue-500 flex flex-grow">-->
+
+<!--  </div>-->
+<!--  <div class="w-full col-span-7 flex-grow bg-red-500">-->
+<!--    <div-->
+<!--      class="flex flex-grow flex-col bg-primary_100 border-black h-full border-1px rounded-md m-2 p-2"-->
+<!--    >-->
+<!--      <div class="flex flex-grow mb-1 py-2 overflow-auto flex-col-reverse">-->
+
+<!--        <ul class="flex flex-grow flex-col m-2 ml-0">-->
+<!--      @if(chats()){-->
+<!--      @for (chat of chats(); track $index){-->
+<!--        <li class="flex justify-center w-full">-->
+<!--          {{chat}}-->
+<!--        </li>-->
+<!--        }-->
+<!--      }-->
+<!--    </ul>-->
+<!--      </div>-->
+
+<!--      <chat-message-sender />-->
+
+<!--      </div>-->
+<!--  </div>-->
+<!--</div>-->

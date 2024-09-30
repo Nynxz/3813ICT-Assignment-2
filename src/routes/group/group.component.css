@@ -1,0 +1,20 @@
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  @apply  rounded-r-md bg-purple-100;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply m-2 rounded-md bg-purple-100;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply m-2 rounded-md bg-purple-200;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply m-2 rounded-md bg-purple-400;
+}

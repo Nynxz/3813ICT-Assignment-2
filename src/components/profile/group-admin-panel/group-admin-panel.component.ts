@@ -2,6 +2,8 @@ import { Component, signal } from '@angular/core';
 import { UserService } from '@services/user/user.service';
 import { MatCardModule } from '@angular/material/card';
 import { JsonPipe } from '@angular/common';
+import { GroupService } from '@services/group/group.service';
+import { ChatService } from '@services/chat/chat.service';
 
 @Component({
   selector: 'profile-group-admin-panel',
@@ -13,7 +15,10 @@ import { JsonPipe } from '@angular/common';
 export class GroupAdminPanelComponent {
   selectedServer = signal(undefined as any);
 
-  constructor(protected userService: UserService) {}
+  constructor(
+    protected groupService: GroupService,
+    protected chatService: ChatService,
+  ) {}
   protected readonly JSON = JSON;
   protected readonly Array = Array;
   protected readonly console = console;

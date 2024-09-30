@@ -1,0 +1,17 @@
+<div class="border-black border-[1px] rounded-md p-1 flex flex-row">
+  <input
+    type="text"
+    name=""
+    id=""
+    class="flex flex-grow w-full rounded-md"
+    [(ngModel)]="message"
+    (keyup.enter)="send()"
+  />
+  <button
+    (click)="send()"
+    type="submit"
+    class="px-2 mx-2 border-black rounded-md border-[1px]"
+  >
+    Send
+  </button>
+</div>

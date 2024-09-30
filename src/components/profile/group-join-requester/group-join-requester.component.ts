@@ -1,6 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { UserService } from '@services/user/user.service';
+import { ChatService } from '@services/chat/chat.service';
 
 @Component({
   selector: 'profile-group-join-requester',
@@ -11,15 +12,20 @@ import { UserService } from '@services/user/user.service';
 })
 export class GroupJoinRequesterComponent {
   protected readonly Array = Array;
+  constructor(
+    protected chatService: ChatService,
+    protected userService: UserService,
+  ) {
+    console.log(this.jj());
+  }
 
   selectedServer = signal(undefined as any);
 
   requestableGroups = computed(() => {
-    let groups = this.userService.groupsAll();
-    let f = this.userService
-      .groupsAll()
+    this.chatService.allGroups();
+    return this.chatService
+      .allGroups()
       .filter((e) => !e.users.includes(this.userService.user()._id));
-    return f;
   });
 
   selectedGroup = computed(() => {
@@ -27,8 +33,7 @@ export class GroupJoinRequesterComponent {
     if (!sId) {
       return undefined;
     }
-    let a = this.userService.groupsAll().find((e) => e._id === sId);
-    return a;
+    return this.chatService.allGroups().find((e) => e._id === sId);
   });
 
   jj = computed(() => {
@@ -36,10 +41,6 @@ export class GroupJoinRequesterComponent {
       (e: any) => e._id === this.userService.user()._id,
     );
   });
-
-  constructor(protected userService: UserService) {
-    console.log(this.jj());
-  }
 
   selectServer(server: any) {
     // this.selectedServer.set(server);
@@ -56,8 +57,8 @@ export class GroupJoinRequesterComponent {
   updateSelectedServer() {
     console.log('Updating');
     console.log(this.selectedServer());
-    const updatedGroup = this.userService
-      .groupsAll()
+    const updatedGroup = this.chatService
+      .allGroups()
       .find((e) => e._id === this.selectedServer()._id);
     if (updatedGroup) {
       console.log('setting new group');
