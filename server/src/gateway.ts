@@ -1,17 +1,20 @@
-import express from "express";
-import { readdirSync } from "fs";
-import cors from "cors";
-import { Logger } from "./lib/logger";
-import { config } from "dotenv";
-import mongoose from "mongoose";
+import express from 'express';
+import { readdirSync } from 'fs';
+import cors from 'cors';
+import { Logger } from './lib/logger';
+import { config } from 'dotenv';
+import mongoose from 'mongoose';
+import multer from 'multer';
+
 config(); //Load .env file
 
 export class Gateway {
   app;
   router;
+  upload = multer({ dest: 'uploads/' });
   static debug = false;
   constructor() {
-    Logger.logOrangeUnderline("----Gateway----");
+    Logger.logOrangeUnderline('----Gateway----');
     this.app = express();
     this.router = express.Router();
     this.app.use(express.urlencoded({ extended: true }));
@@ -21,47 +24,48 @@ export class Gateway {
   }
 
   checkDebug() {
-    if (process.env["DEBUG"] == "true") {
+    if (process.env['DEBUG'] == 'true') {
       Gateway.debug = true;
-      Logger.logDebugRed("DEBUG ENABLED");
+      Logger.logDebugRed('DEBUG ENABLED');
     }
   }
 
   async connectToMongoDB() {
     try {
-      Logger.logGreen("Connecting to MongoDB...");
-      const uri = process.env["MONGODB_URI"] as string;
+      Logger.logGreen('Connecting to MongoDB...');
+      const uri = process.env['MONGODB_URI'] as string;
       await mongoose.connect(uri);
-      Logger.logGreen("Connected");
+      Logger.logGreen('Connected');
     } catch (error) {
-      Logger.logRed("MongoDB Connection Error");
+      Logger.logRed('MongoDB Connection Error');
     }
   }
 
   async loadRoutes() {
-    Logger.logOrange("Loading Routes:");
+    Logger.logOrange('Loading Routes:');
     await this._loadRoutesFolder();
     this.app.use('/api/v1', this.router);
   }
 
   async start() {
     await this.loadRoutes();
-    this.app.listen(process.env["PORT"], () => {
-      Logger.logOrange(`Listening on port ${process.env["PORT"]}`);
+    this.app.use('/uploads', express.static('uploads'));
+    this.app.listen(process.env['PORT'], () => {
+      Logger.logOrange(`Listening on port ${process.env['PORT']}`);
     });
   }
 
   // Load /src/routes/*.ts files
   private async _loadRoutesFolder() {
-    const routesDir = "./src/routes";
+    const routesDir = './src/routes';
     const routeFiles = readdirSync(routesDir).filter((file) =>
-      file.endsWith(".ts")
+      file.endsWith('.ts'),
     );
     for (const file of routeFiles) {
       Logger.logGreenUnderline(`----${file}----`);
-      const registerRoutes = await import("./routes/" + file);
+      const registerRoutes = await import('./routes/' + file);
       const registerFunc = registerRoutes.default;
-      if (typeof registerFunc === "function") {
+      if (typeof registerFunc === 'function') {
         registerFunc(this.router, this);
       }
     }

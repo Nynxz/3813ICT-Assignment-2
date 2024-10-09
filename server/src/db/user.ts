@@ -1,4 +1,6 @@
-import { Roles, User, UserModel } from "./types/user";
+import { Roles, User, UserModel } from './types/user';
+import { join } from 'path';
+import { unlinkSync } from 'fs';
 
 export async function db_user_create(user: Partial<User>) {
   const exists = await UserModel.exists({ username: user.username });
@@ -31,4 +33,21 @@ export async function db_user_update(user: Partial<User>) {
 export async function db_user_delete(user: Partial<User>) {
   console.log(user._id);
   return await UserModel.deleteOne({ _id: user._id });
+}
+
+export async function db_user_update_profile_image(
+  user: Partial<User>,
+  image: string,
+) {
+  if (user.profileImage) {
+    try {
+      unlinkSync(join('uploads', user.profileImage));
+    } catch {
+      console.log('File does not exist');
+    }
+  }
+  await UserModel.updateOne(
+    { _id: user._id },
+    { ...user, profileImage: image },
+  );
 }

@@ -31,7 +31,7 @@ export async function check_userIsAdminOfGroup(
 // GET /channel/messages
 export async function db_channel_getMessages(channel: string) {
   return await MessageModel.find({ channel: channel })
-    .populate('sender', 'username')
+    .populate('sender', ['username', 'profileImage'])
     .exec();
 }
 
