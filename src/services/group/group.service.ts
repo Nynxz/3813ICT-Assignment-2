@@ -19,7 +19,7 @@ export class GroupService {
   post_create_group() {
     return this.http
       .post(
-        'http://localhost:3200/api/v1/groups/create',
+        this.preferencesService.apiURL + 'groups/create',
         { group: { name: 'New Group!' } },
         {
           headers: {
@@ -38,7 +38,7 @@ export class GroupService {
     console.log('Cancelling');
     this.http
       .post(
-        'http://localhost:3200/api/v1/groups/request/cancel',
+        this.preferencesService.apiURL + 'groups/request/cancel',
         { group, user: this.userService.user() },
         {
           headers: {
@@ -55,7 +55,7 @@ export class GroupService {
   post_request_join_create(group: any) {
     this.http
       .post(
-        'http://localhost:3200/api/v1/groups/request',
+        this.preferencesService.apiURL + 'groups/request',
         { group, user: this.userService.user() },
         {
           headers: {
@@ -74,7 +74,7 @@ export class GroupService {
     console.log('Responding');
     this.http
       .post(
-        'http://localhost:3200/api/v1/groups/request/respond',
+        this.preferencesService.apiURL + 'groups/request/respond',
         { group, user, allow },
         {
           headers: {

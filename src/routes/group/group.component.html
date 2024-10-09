@@ -1,9 +1,10 @@
+
 @if (chatService.selectedGroup().channels) {
   <div class="max-w-32 min-w-32 w-24 border-black border-2 rounded-md m-1 justify-between flex flex-grow flex-col">
 
     <ul class="">
       {{ selectedChannel && 'selected:' + selectedChannel.name }}
-      @for (channel of chatService.selectedGroup().channels ?? [{}]; track channel) {
+      @for (channel of chatService.selectedGroup().channels ?? [{}]; track $index) {
         <li
           [class]="('rounded-md m-1 p-1 border-black border-2 text-sm cursor-pointer select-none  hover:ring-2 ') + (channel == chatService.selectedChannel() ? 'ring-2 ring-blue-500' : 'ring-blue-200') "
           (click)="selectChannel(channel)">
@@ -14,7 +15,14 @@
     <ul class="">
       {{ selectedChannel && 'selected:' + selectedChannel.name }}
       <li
-        class="rounded-md m-1 p-1 border-black border-2 text-sm cursor-pointer select-none  hover:ring-2"
+        [class]="('rounded-md m-1 p-1 border-black border-2 text-sm cursor-pointer select-none ') + (onCall ? ' ring-blue-500 ring-2' : '')"
+        (click)="goToCall()"
+      >
+        Call User
+      </li>
+      <li
+        [class]="('rounded-md m-1 p-1 border-black border-2 text-sm cursor-pointer select-none ') + (onSettings ? ' ring-blue-500 ring-2' : '')"
+        (click)="goToSettings()"
       >
         Settings
       </li>
@@ -23,62 +31,119 @@
   <div
     class="flex flex-grow flex-col bg-primary_100 border-black border-1px rounded-mds"
   >
-    <div class="flex flex-grow mb-1 py-2 overflow-auto flex-col-reverse border-black border-2 rounded-md m-1">
-      <ul class="flex flex-grow flex-col m-2 ml-0 gap-1 p-2">
-        @for (chat of chatService.selectedChannelMessages(); track $index) {
-          <li class="flex w-full border-black border-2 border-t-0 rounded-md border-r-0">
-            <div class="flex flex-col w-full">
-              <div
-                class="flex border-2 border-l-2 ml-[-2px] border-b-0 rounded-md rounded-b-none border-black flex-shrink w-fit max-w-52 pr-2 bg-gray-300">
-                <img src="{{'http://localhost:3200/uploads/'+chat.sender.profileImage}}" class="w-6 h-6 rounded-md">
-                <span class="my-auto flex flex-grow w-full pl-2">
-                  {{ chat.sender.username }}
-                </span>
-              </div>
-              <div
-                class="flex flex-grow flex-col w-full border-t-2 border-r-2 border-black rounded-r-md overflow-hidden whitespace-normal">
-                <span class="block break-words p-1 ">{{ chat.content }}</span>
-                @if (chat.images.length > 0) {
-                  <div class="p-2 rounded-md border-black border-[1px] w-fit m-2 flex flex-row gap-2 overflow-x-scroll">
-                    @for (image of chat.images; track $index) {
-                      <img src="{{'http://localhost:3200/uploads/'+image}}"
-                           class="max-h-52 hover:ring-2 hover:ring-blue-300 cursor-pointer rounded-sm" alt="qt"
-                           (click)="enlargeImage('http://localhost:3200/uploads/'+image)"
-                      loading="lazy"/>
-                    }
-                  </div>
-                }
-                <!--                @if(chat.content.length % 2 == 0){-->
-                <!--                <div class="p-2 rounded-md border-black border-[1px] w-fit m-2 flex flex-row gap-2 overflow-x-scroll">-->
-                <!--                  @for(image of ['http://localhost:4444/bb5.jpg', 'http://localhost:4444/bb6.jpg', 'http://localhost:4444/bb3.jpg', 'http://localhost:4444/bb2.jpg', 'http://localhost:4444/bb.jpg', 'http://localhost:4444/bb4.jpg',]; track $index) {-->
-                <!--                    <img src="{{image}}" class="max-h-52 hover:ring-2 hover:ring-blue-300 cursor-pointer rounded-sm" alt="qt" (click)="enlargeImage(image)"/>-->
-                <!--                  }-->
+      @if (onSettings) {
+        <div class="grid grid-cols-3 grid-rows-4 min-w-full min-h-full gap-2 p-2 ">
+          <div class="col-span-1 row-span-1 rounded-md p-2 border-black border-2">
+            <form>
+              <input type="text" name="groupName" id="groupName" [(ngModel)]="settings_serverName"/>
+              <button (click)="renameServer()" class="rounded-md border-black border-2 px-2 m-2">Rename</button>
 
-                <!--                </div>-->
-                <!--                }-->
+            </form>
+          </div>
+          <div class="col-span-1 row-span-1 rounded-md border-black border-2 flex flex-col">
+            <div class="p-2">
+              <button class="m-2 rounded-md border-black border-2 hover:ring-2 hover:ring-blue-500 px-2"
+                      (click)="createChannel()">New Channel
+              </button>
+              <div class="flex flex-row">
+              <input [(ngModel)]="settings_renameChannel" class="w-full mt-2" />
+                <button (click)="renameChannel()">Rename</button>
               </div>
             </div>
-          </li>
+            <div class="flex-1 overflow-y-scroll">
+              <ul class="p-2">
+                @for (channel of chatService.selectedGroup().channels ?? [{}]; track $index) {
+                  <li (click)="settings_renameChannelID=channel._id; settings_renameChannel=channel.name" [class]="('cursor-pointer ') + (settings_renameChannelID == channel._id ? 'underline' : '')">
+                    {{ channel.name }}
+                    {{ channel._id }}
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-span-1 row-span-1 bg-blue-500 rounded-md">
+            1
+          </div>
+          <div class="col-span-1 row-span-1 bg-blue-500 rounded-md">
+            1
+          </div>
+        </div>
+      } @else if (onCall){
+        <div class="min-w-full gap-2 ">
+          <div>
+            <span class="text-2xl font-bold">
+              Call
+            </span>
+            <ul>
+              @for(user of chatService.selectedServer()?.users!; track $index){
+                <li (click)="callUser(user._id)">
+                  {{user.username}}
+                </li>
+              }
+            </ul>
+<!--            <button (click)="chatService.sendNewDataToPeer()">New Data to {{chatService.lastPeer?.id}}</button>-->
+          </div>
+            <div class="border-black border-2 rounded-md flex flex-grow bg-red-500 flex-row">
+              <div class="w-1/2">
+                <label class="absolute font-bold bg-white px-2 rounded-md m-1">You</label>
+                <video [srcObject]="callYouStream()" autoplay playsinline class="flex flex-grow "></video>
+              </div>
+              <div class="w-1/2">
+              <label class="absolute font-bold bg-white px-2 rounded-md m-1">Them</label>
+                <video [srcObject]="callThemStream()" autoplay playsinline class="flex flex-grow "></video>
+              </div>
+            </div>
+          @if(gettingCalled()){
+            Getting Called by {{gettingCalled()}}!
+            <button (click)="answerCall()">Answer</button>
+          } @else if (inCall){
+            <button (click)="hangUp()">Hangup</button>
+          }
+        </div>
         }
-      </ul>
+      @else {
+        <div class="flex flex-grow mb-1 overflow-auto flex-col-reverse border-black border-2 rounded-md m-1">
+
+        <ul class="flex flex-grow flex-col m-2 ml-0 gap-1 p-2">
+          @for (chat of chatService.selectedChannelMessages(); track $index) {
+            <li class="flex w-full border-black border-2 border-t-0 rounded-md border-r-0">
+              <div class="flex flex-col w-full">
+                <div
+                  class="flex border-2 border-l-2 ml-[-2px] border-b-0 rounded-md rounded-b-none border-black flex-shrink w-fit max-w-52 pr-2 bg-gray-300">
+                  <img src="{{'http://localhost:3200/uploads/'+chat.sender.profileImage}}" class="w-6 h-6 rounded-md">
+                  <span class="my-auto flex flex-grow w-full pl-2">
+                  {{ chat.sender.username }}
+                </span>
+                </div>
+                <div
+                  class="flex flex-grow flex-col w-full border-t-2 border-r-2 border-black rounded-r-md overflow-hidden whitespace-normal">
+                  <span class="block break-words p-1 ">{{ chat.content }}</span>
+                  @if (chat.images.length > 0) {
+                    <div class="p-2 rounded-md border-black border-[1px] w-fit m-2 flex flex-row gap-2 overflow-x-auto">
+                      @for (image of chat.images; track $index) {
+                        <img src="{{'http://localhost:3200/uploads/'+image}}"
+                             class="max-h-52 hover:ring-2 hover:ring-blue-300 cursor-pointer rounded-sm" alt="qt"
+                             (click)="enlargeImage('http://localhost:3200/uploads/'+image)"
+                             loading="lazy"/>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
     </div>
-    @if (chatService.selectedChannel()) {
-      <div class="p-1 flex flex-row w-full gap-1">
-        <!--        <div class="border-black border-2 rounded-md p-1 flex flex-row w-max">-->
-        <!--          <form (ngSubmit)="uploadImage()" class="flex flex-row" enctype="multipart/form-data">-->
-        <!--            <input type="file" name="avatar" id="image" accept="image/*" (change)="onFileSelected($event)">-->
-        <!--          <button-->
-        <!--            type="submit"-->
-        <!--            class="px-2 mx-2 border-black rounded-md border-[1px] whitespace-nowrap"-->
-        <!--          >-->
-        <!--            Upload Image-->
-        <!--          </button>-->
-        <!--          </form>-->
-        <!--        </div>-->
-        <chat-message-sender/>
-      </div>
-    }
+        @if (chatService.selectedChannel() ) {
+          <div class="p-1 flex flex-row w-full gap-1">
+            <chat-message-sender/>
+          </div>
+        }
+      }
+
   </div>
+
   <div *ngIf="enlargedImage"
        class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-12 cursor-pointer"
        (click)="closeImage()">

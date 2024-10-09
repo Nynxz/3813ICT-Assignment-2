@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb';
 
 // POST /groups/update
 export async function db_group_update(newServerDetails: Group) {
+  console.log(newServerDetails);
   const { _id, ...details } = newServerDetails;
   return await GroupModel.findOneAndUpdate({ _id }, details);
   // return await MongoClient.db("3813ICT")
@@ -32,19 +33,27 @@ export async function db_group_delete(group: Group) {
 }
 
 export async function db_all_groups() {
-  return GroupModel.find().populate('requestedUsers'); // If super get all groups
+  return GroupModel.find().populate(['requestedUsers', 'users']); // If super get all groups
 }
 
 //TODO: Move to user?
 // GET /groups
 export async function db_user_groups(_user: any) {
   if (_user.roles.includes(2)) {
-    return GroupModel.find().populate({
-      path: 'requestedUsers',
-      select: 'username',
-    }); // If super get all groups
+    return GroupModel.find().populate([
+      {
+        path: 'requestedUsers',
+        select: 'username',
+      },
+      'users',
+    ]); // If super get all groups
   } else {
-    let user = await UserModel.findById(_user._id).populate('groups');
+    let user = await UserModel.findById(_user._id).populate({
+      path: 'groups',
+      populate: {
+        path: 'users',
+      },
+    });
     if (user !== null) {
       return user.groups;
     }

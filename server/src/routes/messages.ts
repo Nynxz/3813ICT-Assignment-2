@@ -22,7 +22,11 @@ export default (router: Router, gateway: Gateway) => {
         console.log(req.files);
         fileNames = (req.files as any[]).map((file: any) => file.filename); // or use file.originalname if you want the original names
       }
-      if (!req.body.message && !req.body.fileNames) return;
+      console.log('Nope');
+
+      if (!req.body.message && !req.files) return;
+
+      console.log('yep');
       const m = await db_message_send(
         req.body.message,
         req.body.channel,

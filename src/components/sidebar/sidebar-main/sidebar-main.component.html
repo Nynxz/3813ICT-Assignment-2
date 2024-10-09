@@ -11,11 +11,11 @@
   </mat-card-header>
   <mat-card-content class="overflow-y-scroll w-full h-full">
     <ul class="  w-max flex flex-col flex-grow">
-    @for(server of chatService.userGroups(); track server._id){
+    @for(server of chatService.userGroups(); track $index){
       <li class="">
         <app-sidebar-server-widget
           [server]="server"
-          [selected]="chatService.selectedServer() == server"
+          [selected]="chatService.selectedServer()?._id == server._id"
           [folded]="preferencesService.sidebar_folded()"
           (clicked)="chatService.select_server($event)"
         />

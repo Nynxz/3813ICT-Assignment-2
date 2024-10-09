@@ -101,7 +101,9 @@ export class Gateway {
 
       fs.access(filePath, fs.constants.R_OK, (err) => {
         if (err) {
-          res.sendFile(path.join(__dirname, 'uploads', 'default-image.png'));
+          res.sendFile(
+            path.join(process.cwd(), 'uploads', 'default-image.png'),
+          );
         } else {
           res.sendFile(filePath);
         }

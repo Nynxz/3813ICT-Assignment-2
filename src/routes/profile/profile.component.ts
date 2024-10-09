@@ -32,7 +32,10 @@ export class ProfileRoute {
     protected chatService: ChatService,
     private preferencesService: PreferencesService,
     private http: HttpClient,
-  ) {}
+  ) {
+    this.chatService.get_groups_all();
+    this.chatService.get_groups_user();
+  }
 
   selectedFile: File | null = null;
 

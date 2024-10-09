@@ -1,4 +1,3 @@
-import user from '../routes/user';
 import { ChannelModel } from './types/channel';
 import { GroupModel } from './types/group';
 import { MessageModel } from './types/message';
@@ -43,13 +42,13 @@ export async function db_channel_create(channel: {
 }) {
   console.log(channel.group);
   const newChannel = await new ChannelModel(channel).save();
-  await GroupModel.findOneAndUpdate(
+  return await GroupModel.findOneAndUpdate(
     { _id: newChannel.group },
     {
       $addToSet: { channels: newChannel._id },
     },
-  );
-  return newChannel;
+    { returnDocument: 'after' },
+  ).exec();
   // return await MongoClient.db("3813ICT")
   //   .collection("channels")
   //   .insertOne(channel);

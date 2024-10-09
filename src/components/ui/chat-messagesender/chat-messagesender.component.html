@@ -1,5 +1,5 @@
 <div class="border-black border-2 rounded-md p-1 flex flex-row">
-    <input type="file" name="avatar" id="image" accept="image/*" (change)="onFileSelected($event)" multiple>
+    <input #imageInput type="file" name="avatar" id="image" accept="image/*" (change)="onFileSelected($event)" multiple>
   <input
     type="text"
     name=""

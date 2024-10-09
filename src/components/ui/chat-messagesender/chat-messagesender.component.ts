@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '@services/chat/chat.service';
 import { HttpClient } from '@angular/common/http';
@@ -17,6 +17,7 @@ import { PreferencesService } from '@services/preferences/preferences.service';
 export class ChatMessagesenderComponent {
   message = '';
   selectedFiles: FileList | null = null;
+  @ViewChild('imageInput') imageInput!: ElementRef;
 
   constructor(
     private chatService: ChatService,
@@ -48,6 +49,7 @@ export class ChatMessagesenderComponent {
     this.chatService.post_message_channel(formData);
     this.message = '';
     this.selectedFiles = null;
+    this.imageInput.nativeElement.value = '';
 
     // this.http
     //   .post(

@@ -1,10 +1,14 @@
 import {
+  AfterViewChecked,
+  AfterViewInit,
   Component,
   computed,
   effect,
+  ElementRef,
   OnChanges,
   signal,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { UserService } from '@services/user/user.service';
 import { JsonPipe, NgIf } from '@angular/common';
@@ -25,6 +29,26 @@ import { PreferencesService } from '@services/preferences/preferences.service';
   },
 })
 export class GroupRoute {
+  lastCall = undefined as any;
+  gettingCalled = signal('');
+  inCall = false;
+
+  onSettings = false;
+  onCall = false;
+
+  enlargedImage: string | null = null;
+
+  selectedChannel = undefined as any;
+  selectedChannelS = signal(undefined as any);
+
+  settings_serverName = '';
+
+  settings_renameChannel = '';
+  settings_renameChannelID = '';
+
+  callYouStream = signal(undefined as any);
+  callThemStream = signal(undefined as any);
+
   constructor(
     protected userService: UserService,
     protected chatService: ChatService,
@@ -38,30 +62,119 @@ export class GroupRoute {
         this.chatService.get_channel_messages();
       }
     });
+
+    this.settings_serverName = chatService.selectedServer()?.name!;
+
+    navigator.mediaDevices
+      .getUserMedia({
+        video: true,
+      })
+      .then((stream) => {
+        this.callYouStream.set(stream);
+
+        this.chatService.peer?.on('call', (call) => {
+          // Connection established, now you can send data
+          console.log('Answering Call!');
+
+          this.gettingCalled.set(
+            this.chatService
+              .selectedServer()!
+              .users!.find((e) => e._id == call.peer)?.username!,
+          );
+          this.lastCall = call;
+
+          call.on('stream', (stream) => {
+            console.log('Getting other stream?');
+            this.inCall = true;
+            this.lastCall = call;
+            this.callThemStream.set(stream);
+          });
+
+          call.on('close', () => {
+            console.log('Closing Call');
+            this.inCall = false;
+            this.callThemStream.set(undefined);
+            call.close();
+            this.hangUp();
+          });
+        });
+      });
   }
 
-  selectedFile: File | null = null;
+  hangUp() {
+    console.log(this.lastCall);
+    this.lastCall.close();
+    this.inCall = false;
+    this.gettingCalled.set('');
+  }
 
-  enlargedImage: string | null = null;
+  async answerCall() {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+    });
+    this.lastCall.answer(stream);
+    this.gettingCalled.set('');
+    this.inCall = true;
+  }
 
-  selectedChannel = undefined as any;
-  selectedChannelS = signal(undefined as any);
-  // chats = signal([] as any);
-  // chats = computed(() => {
-  //   const sChannel = this.userService.selectedChannel();
-  //   const m = this.userService.getChannelmessages(sChannel).subscribe(messages => {
-  //
-  //   });
-  //   if (sChannel) {
-  //     return this.arr.map((e) => sChannel.name + e ?? '');
-  //   }
-  //   return [];
-  // });
+  async goToCall() {
+    const mediaStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+    });
+    this.callYouStream.set(mediaStream);
+
+    this.onSettings = false;
+    this.onCall = !this.onCall;
+  }
+
+  async callUser(peer: string) {
+    const mediaStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+    });
+    this.callYouStream.set(mediaStream);
+
+    const conn = this.chatService.peer?.call(peer, mediaStream);
+
+    this.chatService.peer?.on('call', (call) => {
+      // Connection established, now you can send data
+      console.log('Answering Call!');
+      this.lastCall = call;
+      call.answer(mediaStream);
+    });
+
+    conn.on('stream', (stream) => {
+      console.log('Getting other stream?');
+      this.lastCall = conn;
+      this.inCall = true;
+      this.callThemStream.set(stream);
+    });
+
+    conn.on('close', () => {
+      console.log('Closing Call');
+      this.inCall = false;
+      this.callThemStream.set(undefined);
+      conn.close();
+      this.hangUp();
+      conn.off('stream');
+      conn.off('close');
+    });
+  }
+
+  goToSettings() {
+    this.onSettings = !this.onSettings;
+    this.onCall = false;
+  }
 
   selectChannel(channel: any) {
+    this.onCall = false;
+    this.onSettings = false;
     console.log('Selecting');
     this.chatService.selectedChannel.set(undefined);
     this.chatService.selectedChannel.set(channel);
+  }
+
+  createChannel() {
+    this.chatService.create_new_channel();
   }
 
   enlargeImage(image: string) {
@@ -72,34 +185,17 @@ export class GroupRoute {
     this.enlargedImage = null;
   }
 
-  uploadImage() {
-    console.log('Uploading');
-    if (!this.selectedFile) {
-      return; // No file selected, handle this case as needed
-    }
-
-    const formData = new FormData();
-    formData.append('image', this.selectedFile, this.selectedFile.name);
-    this.http
-      .post(
-        'http://localhost:3200/api/v1/user/updateprofilepicture',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${this.preferencesService.jwt()}`,
-          },
-        },
-      )
-      .subscribe((response) => {
-        console.log('Upload successful!', response);
-      });
+  renameServer() {
+    console.log(this.settings_serverName);
+    this.chatService.rename_group(this.settings_serverName);
   }
 
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length) {
-      this.selectedFile = input.files[0];
-    }
+  renameChannel() {
+    console.log(this.settings_renameChannel);
+    this.chatService.rename_channel(
+      this.settings_renameChannel,
+      this.settings_renameChannelID,
+    );
   }
 
   arr = [

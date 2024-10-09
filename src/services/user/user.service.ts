@@ -117,7 +117,7 @@ export class UserService {
 
   login(username: string, password: string) {
     return this.http
-      .post('http://localhost:3200/api/v1/user/login', {
+      .post(this.preferencesService.apiURL + 'user/login', {
         user: { username, password },
       })
       .pipe(catchError((err) => err.error))
@@ -132,7 +132,7 @@ export class UserService {
   refreshJWT() {
     return this.http
       .post(
-        'http://localhost:3200/api/v1/user/refresh',
+        this.preferencesService.apiURL + 'user/refresh',
         {},
         {
           headers: {
@@ -153,7 +153,7 @@ export class UserService {
 
   register(username: string, email: string, password: string) {
     return this.http
-      .post('http://localhost:3200/api/v1/user/register', {
+      .post(this.preferencesService.apiURL + 'user/register', {
         user: { username, email, password },
       })
       .pipe(catchError((err) => err.error))

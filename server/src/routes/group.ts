@@ -30,6 +30,7 @@ import {
 
 export default (router: Router, gateway: Gateway) => {
   // OLD
+
   registerHTTP(
     'get',
     '/groups',

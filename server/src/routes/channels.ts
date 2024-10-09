@@ -133,7 +133,7 @@ export default (router: Router, gateway: Gateway) => {
       if (
         (await check_userIsAdminOfChannel(
           res.locals.user._id,
-          req.body.channel,
+          req.body.channel._id,
         )) ||
         res.locals.user.roles.includes(Roles.SUPER)
       ) {
