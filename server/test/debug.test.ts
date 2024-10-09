@@ -1,7 +1,7 @@
 describe('HTTP Debug Tests', () => {
   it('should return "Hello World"', async () => {
     const response = await fetch('http://localhost:3200/api/v1/hello');
-    expect(await response.text()).toBe('Hello World'); // Adjust based on your endpoint's response
+    expect(await response.text()).toBe('Hello World');
     expect(response.status).toBe(200);
   });
 
@@ -22,9 +22,9 @@ describe('HTTP Debug Tests', () => {
     const response = await fetch('http://localhost:3200/api/v1/ping', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json', // Set the content type
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ hello: 'world' }), // Send the body with the 'hello' key
+      body: JSON.stringify({ hello: 'world' }),
     });
 
     expect(response.status).toBe(200);
@@ -34,7 +34,7 @@ describe('HTTP Debug Tests', () => {
     const response = await fetch('http://localhost:3200/api/v1/users/all', {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json', // Set the content type
+        'Content-Type': 'application/json',
       },
     });
     expect(response.status).toBe(400);

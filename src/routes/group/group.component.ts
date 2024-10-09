@@ -49,12 +49,7 @@ export class GroupRoute {
   callYouStream = signal(undefined as any);
   callThemStream = signal(undefined as any);
 
-  constructor(
-    protected userService: UserService,
-    protected chatService: ChatService,
-    private preferencesService: PreferencesService,
-    private http: HttpClient,
-  ) {
+  constructor(protected chatService: ChatService) {
     effect(() => {
       console.log('Update');
       const sChannel = this.chatService.selectedChannel();

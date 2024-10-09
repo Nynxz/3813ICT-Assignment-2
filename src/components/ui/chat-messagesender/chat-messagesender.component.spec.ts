@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChatMessagesenderComponent } from './chat-messagesender.component';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('ChatMessagesenderComponent', () => {
   let component: ChatMessagesenderComponent;
@@ -8,9 +9,11 @@ describe('ChatMessagesenderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChatMessagesenderComponent]
-    })
-    .compileComponents();
+      imports: [ChatMessagesenderComponent],
+      providers: [
+        provideHttpClientTesting(), // Use this to provide HttpClientTesting
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChatMessagesenderComponent);
     component = fixture.componentInstance;

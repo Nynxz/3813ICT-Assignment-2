@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {ProfileRoute } from './profile.component';
+import { ProfileRoute } from './profile.component';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('ProfileComponent', () => {
   let component: ProfileRoute;
@@ -8,9 +9,11 @@ describe('ProfileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfileRoute]
-    })
-    .compileComponents();
+      imports: [ProfileRoute],
+      providers: [
+        provideHttpClientTesting(), // Use this to provide HttpClientTesting
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ProfileRoute);
     component = fixture.componentInstance;

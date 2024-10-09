@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoginRoute } from './login.component';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('LoginComponent', () => {
   let component: LoginRoute;
@@ -8,9 +9,11 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LoginRoute]
-    })
-    .compileComponents();
+      imports: [LoginRoute],
+      providers: [
+        provideHttpClientTesting(), // Use this to provide HttpClientTesting
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LoginRoute);
     component = fixture.componentInstance;

@@ -118,6 +118,7 @@ Represents a message sent in a channel, from a user.
 - _id: uuid | Unique
 - content: string
 - channel: Channel*
+- images: string[]
 - sender: User*
 ```
 
@@ -130,22 +131,26 @@ Represents a message sent in a channel, from a user.
 - **Login** `/login`
   - Displays the Login and Register Form
   - Successful login routes to /user
-- **User** `/user`
+- **Profile** `/profile`
   - Displays 'dashboards' based on roles
-  - User Dashboard (Not Implemented)
-    - Change username, profile picture
-  - Super Dashboard (Functional)
+  - User Dashboard
+    - Update profile picture
+  - Super Dashboard
     - Promote Users
     - Remove Users
-  - Admin Dashboard (Functional)
+  - Request to join new groups
+  - Accept/Deny requests to join a group
   - Create Groups
   - Update Groups
   - Delete Groups
-- **Chat** `/chat`
+- **Group** `/group`
   - Displays a selectable 'channel sidebar'
   - When a channel is selected it displays the Chat
   - Sidebar has a button for displaying group settings
   - Allows admins to create, update & delete channels
+  - Chat to other users
+  - Call other users
+
 - All routes will contain the sidebar, this is used for navigating through the site. Routes are managed through the [`<router-outlet>`](https://angular.dev/api/router/RouterOutlet?tab=api) component and displayed in the main portion of the screen
 
 ### Services
@@ -330,9 +335,13 @@ A request which contains above, must receive a payload like below.
   - User Registration
   - Returns JWT
  - `(POST) /user/login`
+   - Logs in the user, returning a JWT 
  - `(POST) /user/refresh`
+   - Refreshs the users JWT
  - `(POST) /user/update`
+   - Updates the user information
  - `(POST) /user/updateprofilepicture`
+   - Uploads and sets new profile picture for the user, deleting old one the disk
 
 
 #### Groups
@@ -344,8 +353,11 @@ A request which contains above, must receive a payload like below.
   - If not, gets all groups user is ADMIN / USER of
   - Returns array of Groups
 - `(GET) /groups/all`
+  - returns all the groups
 - `(GET) /groups/channels`
+  - returns all the channels of a group
 - `(GET) /groups/info`
+  - returns information about a group
 - `(GET) /groups/users`
   - Gets all the users of a specific group
   - TODO: add validation (user of group, admin or super)
@@ -353,18 +365,24 @@ A request which contains above, must receive a payload like below.
   - `requireValidRole(Roles.ADMIN)`
   - Creates a new group if user is an ADMIN
 - `(POST) /groups/request`
+  - creates a request to join a group  
 - `(POST) /groups/request/respond`
+  - responds to a request to join a group 
 - `(POST) /groups/request/cancel`
+  - cancels a request to join a group 
 - `(POST) /groups/delete`
+  - deletes a group
 - `(POST) /groups/update`
   - `requireValidRole(Roles.SUPER)`
   - TODO: allow admins to update
   - TODO: validate request body
   - Updates a group
 - `(POST) /groups/adduser`
+  - adds a user to the group
 - `(POST) /groups/removeuser`
+  - remove a user from a group
 - `(POST) /groups/promoteuser`
-- 
+  - promote a user in a group
 #### Messages
 
 - `(POST) /message/send`
@@ -379,7 +397,9 @@ A request which contains above, must receive a payload like below.
 - `(GET) /channel/users`
   - Gets all users of a specific channel
 - `(POST) /channel/adduser`
+  - Adds a user to a channel
 - `(POST) /channel/removeuser`
+  - Removes a user from a channel
 - `(POST) /channel/create`
   - `requireValidRole(Roles.ADMIN)`
   - Creates a new channel
@@ -390,7 +410,9 @@ A request which contains above, must receive a payload like below.
   - `requireValidRole(Roles.ADMIN)`
   - Updates an existing channel
 
-
+#### Content
+- `(GET) /content/images/{imageID}`
+  - Returns an image uploaded by a user
 
 ## Interaction
 
