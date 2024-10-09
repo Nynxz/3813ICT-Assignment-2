@@ -11,8 +11,6 @@ import { io, Socket } from 'socket.io-client';
   providedIn: 'root',
 })
 export class UserService {
-  server = signal<{ name?: string; _id?: string } | undefined>({});
-
   user = computed<any>(() => {
     const jwt = this.preferencesService.jwt();
     if (jwt) {
@@ -22,6 +20,7 @@ export class UserService {
       if (isExpired) {
         this.logout();
       } else {
+        console.log(a);
         return a;
       }
     } else {
@@ -34,67 +33,41 @@ export class UserService {
 
   // selectedGroup = signal({} as { channels?: any[] });
   // selectedChannel = signal(undefined as any);
-  socket;
+  // socket;
 
   constructor(
     private preferencesService: PreferencesService,
     private http: HttpClient,
     private router: Router,
   ) {
-    this.socket = io('http://localhost:3011');
-
-    this.socket.on('connect', () => {
-      this.socket.emit('message', {
-        type: 'user-joined',
-        data: this.socket.id,
-      });
-      console.log(this.socket.id);
-      console.log('Connected to chat');
-    });
-
-    this.socket.on('message', ({ type, data }) => {
-      console.log(type, data);
-    });
-
-    this.router.events.subscribe((event) => {
-      if (event.type == EventType.NavigationEnd) {
-        if (this.router.url !== '/group') {
-          console.log('SERVER SET NO');
-          this.server.set(undefined);
-        }
-      }
-    });
-
+    // this.socket = io('http://localhost:3011');
+    //
+    // this.socket.on('connect', () => {
+    //   this.socket.emit('message', {
+    //     type: 'user-joined',
+    //     data: this.socket.id,
+    //   });
+    //   console.log(this.socket.id);
+    //   console.log('Connected to chat');
+    // });
+    //
+    // this.socket.on('message', ({ type, data }) => {
+    //   console.log(type, data);
+    // });
+    // this.router.events.subscribe((event) => {
+    //   if (event.type == EventType.NavigationEnd) {
+    //     if (this.router.url !== '/group') {
+    //       console.log('SERVER SET NO');
+    //       this.server.set(undefined);
+    //     }
+    //   }
+    // });
     // effect(() => {
     //   const user = this.user();
     //   if (user) return this.getGroups();
     //   return [];
     // });
     //
-    effect(
-      () => {
-        const server = this.server();
-        if (server != undefined) {
-          this.http
-            .get('http://localhost:3200/api/v1/groups/info', {
-              headers: {
-                group: server._id!,
-                Authorization: `Bearer ${this.preferencesService.jwt()}`,
-              },
-            })
-            .pipe(catchError((e) => [e] as any[]))
-            .subscribe((a) => {
-              if (a) {
-                this.selectedGroup.set(a);
-                this.selectedChannel.set(undefined);
-              }
-            });
-        } else {
-          this.selectedGroup.set({});
-        }
-      },
-      { allowSignalWrites: true },
-    );
   }
 
   // getGroups() {
@@ -124,23 +97,23 @@ export class UserService {
   //     });
   // }
 
-  async selectServer(server: { name?: string } | undefined) {
-    if (server == this.server()) {
-      this.server.set(undefined);
-      return;
-    } else {
-      this.server.set(server);
-    }
-
-    if (this.router.url === '/group') {
-    } else if (await this.router.navigate(['/group'])) {
-      this.server.set(server);
-    } else {
-      this.router.navigate(['/login']).then(() => {
-        this.server.set(undefined);
-      });
-    }
-  }
+  // async selectServer(server: { name?: string } | undefined) {
+  //   if (server == this.server()) {
+  //     this.server.set(undefined);
+  //     return;
+  //   } else {
+  //     this.server.set(server);
+  //   }
+  //
+  //   if (this.router.url === '/group') {
+  //   } else if (await this.router.navigate(['/group'])) {
+  //     this.server.set(server);
+  //   } else {
+  //     this.router.navigate(['/login']).then(() => {
+  //       this.server.set(undefined);
+  //     });
+  //   }
+  // }
 
   login(username: string, password: string) {
     return this.http
@@ -242,32 +215,32 @@ export class UserService {
   //   console.log('Cancelled');
   // }
 
-  sendMessageToChannel(message: string) {
-    this.http
-      .post(
-        'http://localhost:3200/api/v1/message/send',
-        {
-          message: {
-            content: message,
-            channel: this.selectedChannel()._id,
-          },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${this.preferencesService.jwt()}`,
-          },
-        },
-      )
-      .subscribe((e) => {
-        console.log(e);
-        // this.getGroups();
-      });
-
-    this.socket.emit('message', {
-      type: 'new-message',
-      data: message,
-    });
-  }
+  // sendMessageToChannel(message: string) {
+  //   // this.http
+  //   //   .post(
+  //   //     'http://localhost:3200/api/v1/message/send',
+  //   //     {
+  //   //       message: {
+  //   //         content: message,
+  //   //         channel: this.selectedChannel()._id,
+  //   //       },
+  //   //     },
+  //   //     {
+  //   //       headers: {
+  //   //         Authorization: `Bearer ${this.preferencesService.jwt()}`,
+  //   //       },
+  //   //     },
+  //   //   )
+  //   //   .subscribe((e) => {
+  //   //     console.log(e);
+  //   //     // this.getGroups();
+  //   //   });
+  //
+  //   this.socket.emit('message', {
+  //     type: 'new-message',
+  //     data: message,
+  //   });
+  // }
 
   getChannelmessages(channel: any) {
     return this.http.get('http://localhost:3200/api/v1/channel/messages', {
@@ -278,10 +251,12 @@ export class UserService {
     });
   }
 
+  uploadProfileImage() {}
+
   async logout() {
     this.preferencesService.jwt.set('');
     await this.router.navigate(['/login']);
-    this.server.set(undefined);
-    this.groups.set([]);
+    // this.server.set(undefined);
+    // this.groups.set([]);
   }
 }

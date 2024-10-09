@@ -2,6 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { UserService } from '@services/user/user.service';
 import { ChatService } from '@services/chat/chat.service';
+import { GroupService } from '@services/group/group.service';
 
 @Component({
   selector: 'profile-group-join-requester',
@@ -15,6 +16,7 @@ export class GroupJoinRequesterComponent {
   constructor(
     protected chatService: ChatService,
     protected userService: UserService,
+    protected groupService: GroupService,
   ) {
     console.log(this.jj());
   }
