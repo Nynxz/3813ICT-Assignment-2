@@ -7,7 +7,7 @@ import {
   db_users_all,
 } from '../db/user';
 import { generateUserJWT } from '../lib/jwt';
-import { Roles, User } from '../db/types/user';
+import { Roles, User, UserModel } from '../db/types/user';
 import requireObjectHasKeys from '../middleware/requireObjectHasKeys';
 import requireValidRole from '../middleware/requireValidRole';
 import { Gateway } from '../gateway';
@@ -57,6 +57,28 @@ export default (router: Router, gateway: Gateway) => {
       }
     },
     [requireObjectHasKeys('user', ['username', 'password'])],
+  );
+
+  registerHTTP(
+    'post',
+    '/user/refresh',
+    router,
+    async (req, res) => {
+      let user = await UserModel.findById(res.locals.user);
+      const user2 = await db_user_find({
+        username: user!.username,
+        password: user!.password,
+      } as Partial<User>);
+
+      if (user) {
+        res.send({
+          jwt: generateUserJWT(user2 as Partial<User>),
+        });
+      } else {
+        res.status(401).send('Invalid Login');
+      }
+    },
+    [requireAuthHeader()],
   );
 
   registerHTTP('post', '/user/update', router, (req, res) => {});

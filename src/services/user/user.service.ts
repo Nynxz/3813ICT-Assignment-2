@@ -129,6 +129,28 @@ export class UserService {
       });
   }
 
+  refreshJWT() {
+    return this.http
+      .post(
+        'http://localhost:3200/api/v1/user/refresh',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${this.preferencesService.jwt()}`,
+          },
+        },
+      )
+      .pipe(catchError((err) => err.error))
+      .subscribe(async (e: any) => {
+        console.log('refreshed JWT');
+        console.log(e);
+        this.preferencesService.jwt.set(e.jwt);
+        console.log(this.user());
+        await this.router.navigate(['/profile']);
+        return true;
+      });
+  }
+
   register(username: string, email: string, password: string) {
     return this.http
       .post('http://localhost:3200/api/v1/user/register', {

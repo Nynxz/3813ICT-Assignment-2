@@ -1,16 +1,17 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 let MessageSchema = new Schema({
   from: String,
   content: String,
+  images: [String],
   channel: {
     type: Schema.Types.ObjectId,
-    ref: "Channel",
+    ref: 'Channel',
   },
   sender: {
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
   },
 });
 
-export const MessageModel = mongoose.model("Message", MessageSchema);
+export const MessageModel = mongoose.model('Message', MessageSchema);

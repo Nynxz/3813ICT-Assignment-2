@@ -43,16 +43,20 @@ export class ChatService {
     });
 
     this.socket.on('message', ({ type, data }) => {
-      console.log(type, data);
+      // console.log(type, data);
       if (type == 'new-message') {
+        console.log('GOT NEW SOCKET MESSAGE');
         const p = JSON.parse(data);
+        console.log(type, p);
         if (p.channel == this.selectedChannel()._id) {
           const n = {
             channel: p.channel,
             content: p.content,
-            sender: p.user,
+            sender: p.sender,
+            images: p.images,
           };
           this.selectedChannelMessages.update((b) => [...b, n]);
+          console.log(this.selectedChannelMessages());
         }
       }
     });
@@ -145,36 +149,28 @@ export class ChatService {
       });
   }
 
-  post_message_channel(message: string) {
+  post_message_channel(formData: FormData) {
+    formData.append('channel', this.selectedChannel()._id);
     this.http
-      .post(
-        'http://localhost:3200/api/v1/message/send',
-        {
-          message: {
-            content: message,
-            channel: this.selectedChannel()._id,
-          },
+      .post('http://localhost:3200/api/v1/message/send', formData, {
+        headers: {
+          Authorization: `Bearer ${this.preferencesService.jwt()}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${this.preferencesService.jwt()}`,
-          },
-        },
-      )
+      })
       .subscribe((e) => {
-        console.log(e);
-        this.get_groups_all();
-        this.get_channel_messages();
+        // console.log(e);
+        // this.get_groups_all();
+        // this.get_channel_messages();
       });
 
-    this.socket.emit('message', {
-      type: 'new-message',
-      data: JSON.stringify({
-        content: message,
-        channel: this.selectedChannel()._id,
-        user: this.userService.user(),
-      }),
-    });
+    // this.socket.emit('message', {
+    //   type: 'new-message',
+    //   data: JSON.stringify({
+    //     content: formData.get('message'),
+    //     channel: this.selectedChannel()._id,
+    //     user: this.userService.user(),
+    //   }),
+    // });
   }
   get_channel_messages() {
     this.http

@@ -1,4 +1,4 @@
-import { debugCurrentDate } from "./utils";
+import { debugCurrentDate } from './utils';
 
 // https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
 export class Logger {
@@ -6,10 +6,10 @@ export class Logger {
     console.log(`\x1b[32m[gateway]: ${text}\x1b[0m`);
   }
   static logGreenUnderline(text: string) {
-    console.log("\x1b[32m[gateway]: \x1b[4m" + text + "\x1b[0m");
+    console.log('\x1b[32m[gateway]: \x1b[4m' + text + '\x1b[0m');
   }
   static logRed(text: string) {
-    console.error("[gateway]: " + text);
+    console.error('[gateway]: ' + text);
   }
   static logDebugGreen(text: string) {
     console.log(`\x1b[32m[DEBUG]: ${debugCurrentDate(text)}\x1b[0m`);
@@ -21,9 +21,9 @@ export class Logger {
     console.error(`[DEBUG]: ${debugCurrentDate(text)}`);
   }
   static logOrange(text: string) {
-    console.warn("[gateway]: " + text);
+    console.warn(`\x1b[38;5;215m[gateway]: ${text}\x1b[0m`);
   }
   static logOrangeUnderline(text: string) {
-    console.warn("[gateway]: \x1b[4m" + text + "\x1b[0m");
+    console.warn('[gateway]: \x1b[4m' + text + '\x1b[0m');
   }
 }
