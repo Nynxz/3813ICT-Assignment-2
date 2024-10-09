@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
   const gateway = new Gateway();
   await gateway.connectToMongoDB();
   await gateway.start();
-
+  console.log('yes');
   // const http = require('http');
   // const server = http.createServer(gateway.app);
   //
